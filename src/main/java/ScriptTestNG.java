@@ -1,5 +1,4 @@
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -9,9 +8,6 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.*;
-
-import static java.lang.Float.*;
-import static java.lang.Integer.parseInt;
 
 public class ScriptTestNG extends ActionUI{
 
@@ -36,9 +32,8 @@ public class ScriptTestNG extends ActionUI{
         }
         @Test (priority = 3)
         public void display() {
-            boolean Display = driver.findElement(By.cssSelector(properties.getProperty("productslocator"))).isDisplayed();
+            boolean Display = driver.findElement(By.xpath(properties.getProperty("productlistxpath"))).isDisplayed();
             System.out.println("Product displayed is product searched:"+Display);
-            //input[value='dresses']
         }
             @Test (priority = 4)
             public void highAndLowPrices() {
