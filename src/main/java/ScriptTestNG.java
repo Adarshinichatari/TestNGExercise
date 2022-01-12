@@ -1,4 +1,5 @@
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -14,55 +15,54 @@ import static java.lang.Integer.parseInt;
 
 public class ScriptTestNG extends ActionUI{
 
-        @Test
-    public void test1(){
+        @Test (priority = 1)
+    public void search(){
             getProperties();
-            WebElement search = driver.findElement(By.cssSelector(properties.getProperty("searchlocator")));
+            WebElement search = driver.findElement(By.xpath(properties.getProperty("searchlocator")));
             webInputData(search,properties.getProperty("search"));
-            click(driver.findElement(By.cssSelector(properties.getProperty("searchbutton"))));
-           //System.out.println();
+            click(driver.findElement(By.xpath(properties.getProperty("searchbutton"))));
         }
-        @Test
-        public void test2(){
-            List<WebElement> products = driver.findElements(By.cssSelector(properties.getProperty("productslocator")));
+        @Test (priority = 2)
+        public void productNamesAndSize(){
+            List<WebElement> products = driver.findElements(By.xpath(properties.getProperty("productlistxpath")));
             for(int i=0;i<products.size();i++) {
                 System.out.println(products.get(i).getText());
             }
+            System.out.println("Total number of products = " + products.size());
         }
-        @Test
-        public void test3(){
+        @Test (priority = 0)
+        public void titleOfPage(){
             System.out.println("TITLE =" + driver.getTitle());
         }
-        @Test
-        public void test4() {
+        @Test (priority = 3)
+        public void display() {
             boolean Display = driver.findElement(By.cssSelector(properties.getProperty("productslocator"))).isDisplayed();
             System.out.println("Product displayed is product searched:"+Display);
             //input[value='dresses']
         }
-            @Test
-            public void test5() {
-                List<WebElement> list_of_products = driver.findElements(By.cssSelector(properties.getProperty("productslocator")));
-                List<WebElement> list_of_products_price = driver.findElements(By.cssSelector(".price.product-price"));
+            @Test (priority = 4)
+            public void highAndLowPrices() {
+                Map<Double, String> map=new HashMap<>();
+               // driver.findElement(By.cssSelector("#search_query_top")).sendKeys("Dresses"+ Keys.ENTER);
+                List<WebElement> list_of_products = driver.findElements(By.xpath(properties.getProperty("productlistxpath")));
+                List<WebElement> list_of_products_price = driver.findElements(By.xpath(properties.getProperty("productpricexpath")));
+                List<String> list = new ArrayList<>();
+                for (WebElement a:list_of_products_price) {list.add(a.getText());}
+                for(int i=0;i<list_of_products_price.size();i++) {
+                    map.put(Double.valueOf(list.get(i).replaceAll("[$]","")),list_of_products.get(i).getText());
+                    System.out.println(map);
 
-                //Use of HashMaop to store Products and Their prices(after conversion to Integer)
-                String product_name;
-                String product_price;
-                float int_product_price;
-                HashMap<Float, String> map_final_products = new HashMap<Float,String>();
-                for(int i=0;i<list_of_products.size();i++) {
-                    product_name = list_of_products.get(i).getText();//Iterate and fetch product name
-                    product_price = list_of_products_price.get(i).getText();//Iterate and fetch product price
-                    product_price = product_price.replaceAll("[^0-9]", " ");//Replace anything wil space other than numbers
-                   int_product_price = Integer.parseInt(product_price);//Convert to Integer
-                   map_final_products.put(int_product_price,product_name);//Add product and price in HashMap
                 }
-                Set<Float> allkeys = map_final_products.keySet();
-                ArrayList<Float> array_list_values_product_prices = new ArrayList<Float>(allkeys);
-                Collections.sort(array_list_values_product_prices);
-                float low_price = array_list_values_product_prices.get(0);
+                Set<Double> allkeys = map.keySet();
+                ArrayList<Double> product_prices = new ArrayList<>(allkeys);
 
-               Reporter.log("Low Product Price is: " + low_price + " Product name is: " + map_final_products.get(low_price),true);
-
+                Collections.sort(product_prices);
+                Double low_price = product_prices.get(0);
+                Double highPrice = product_prices.get(product_prices.size()-1);
+                System.out.println("Lowest product Name:" + map.get(low_price));
+                System.out.println("Lowest price:" + low_price);
+                System.out.println("High product Name:" + map.get(highPrice));
+                System.out.println("High price:" + highPrice);
 
             }
 
